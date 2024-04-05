@@ -1,0 +1,48 @@
+/* Global */
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Graphik', sans-serif;
+  scroll-behavior: smooth;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@media (-webkit-device-pixel-ratio: 1.25) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media (-webkit-device-pixel-ratio: 1.5) {
+  html {
+    font-size: 10px;
+  }
+}
+
+.container {
+  .row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 2rem;
+  }
+}
+
+.container.row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.2rem;
+  margin: 2rem;
+}

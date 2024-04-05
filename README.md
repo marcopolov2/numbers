@@ -36,5 +36,9 @@ cd frontend
 ```
 
 ```bash
+npm i
+```
+
+```bash
 npm start
 ```

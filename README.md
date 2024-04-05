@@ -6,7 +6,7 @@ This repository contains a straightforward RESTful API built with Java Spring Bo
 
 ## Running the Backend
 
-To run the backend, open a terminal and execute the following command:
+To run the backend, open a terminal, cd to backend and execute the following command:
 
 ```bash
 .\gradlew.bat bootRun

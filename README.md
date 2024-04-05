@@ -1,2 +1,13 @@
 # numbers
-A simple RESTful api using Java Spring Boot (HATEOS) consumed by React and Redux
+
+## Description
+
+This repository contains a straightforward RESTful API built with Java Spring Boot, incorporating HATEOAS principles. It is designed to be consumed by a React and Redux front-end.
+
+## Running the Backend
+
+To run the backend, open a terminal and execute the following command:
+
+```bash
+.\gradlew.bat bootRun
+```

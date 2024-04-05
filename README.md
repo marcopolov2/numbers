@@ -22,3 +22,5 @@ To run the backend, navigate to the 'backend' directory in your terminal:
 
 ```bash
 cd backend
+
+.\gradlew.bat bootRun

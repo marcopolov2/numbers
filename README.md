@@ -30,6 +30,6 @@ cd backend
 To run the frontend, navigate to the 'frontend' directory in your terminal:
 
 ```bash
-frontend
+cd frontend
 npm start
 ```

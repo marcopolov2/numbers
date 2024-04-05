@@ -22,6 +22,8 @@ To run the backend, navigate to the 'backend' directory in your terminal:
 
 ```bash
 cd backend
+```
+```bash
 .\gradlew.bat bootRun
 ```
 
@@ -31,5 +33,8 @@ To run the frontend, navigate to the 'frontend' directory in your terminal:
 
 ```bash
 cd frontend
+```
+
+```bash
 npm start
 ```

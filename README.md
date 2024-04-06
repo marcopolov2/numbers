@@ -43,3 +43,4 @@ npm i
 ```bash
 npm start
 ```
+React will spin up a local server on http://localhost:3000/

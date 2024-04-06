@@ -5,7 +5,6 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import CountrySelect from './CountrySelect';
 import Input from './Input';
@@ -18,8 +17,6 @@ import {
 } from '../shared/utility';
 import { User } from '../shared/models/models';
 import { Column } from '../shared/models/ui';
-
-const PAGE_SIZES = [5, 10, 25, 100];
 
 const isUserChanged = (user: User, newUser: User | undefined): boolean => {
   if (!newUser) {
@@ -67,15 +64,9 @@ interface SteakyHeaderProps {
   // inputs:
   users: User[];
   originalUsers: User[];
-  totalUsersCount: number;
   sortField: string;
   sortDirection: string;
-  page: number;
-  pageSize: number;
-
   // outputs:
-  handlePageChanged: (page: number) => void;
-  handlePageSizeChanged: (pageSize: number) => void;
   handleSortFieldChanged: (column: string) => void;
   handleSortDirectionChanged: (sort: 'ASC' | 'DESC') => void;
   handleUserChanged: (userID: number, field: string, value: string) => void;
@@ -86,13 +77,8 @@ interface SteakyHeaderProps {
 export const StickyHeaderTable: React.FC<SteakyHeaderProps> = ({
   users,
   originalUsers,
-  totalUsersCount: totalRowCount,
-  page,
-  pageSize,
   sortField,
   sortDirection,
-  handlePageChanged,
-  handlePageSizeChanged,
   handleSortFieldChanged,
   handleSortDirectionChanged,
   handleUserChanged,
@@ -110,14 +96,6 @@ export const StickyHeaderTable: React.FC<SteakyHeaderProps> = ({
       ),
     );
   }, [users]);
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const size = +event.target.value;
-    handlePageChanged(0);
-    handlePageSizeChanged(size);
-  };
 
   const tableHeaderClicked = (sortField_: string) => {
     const newSortDirection =
@@ -220,11 +198,18 @@ export const StickyHeaderTable: React.FC<SteakyHeaderProps> = ({
   };
 
   return (
-    <Paper>
-      <TableContainer sx={{ minHeight: 800, minWidth: 1020 }}>
+    <Paper className="component__table" sx={{ width: '100%' }}>
+      <TableContainer>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
-            <TableRow sx={{ '& th': { backgroundColor: '#1976d238' } }}>
+            <TableRow
+              sx={{
+                '& th': {
+                  backgroundColor: '#1976d2',
+                  color: 'white',
+                },
+              }}
+            >
               {columns.map((column: Column) => (
                 <TableCell
                   sx={{ cursor: 'pointer', userSelect: 'none' }}
@@ -232,8 +217,8 @@ export const StickyHeaderTable: React.FC<SteakyHeaderProps> = ({
                   style={{ minWidth: column.minWidth }}
                   onClick={() => tableHeaderClicked(column.id)}
                 >
-                  <section className="table-header">
-                    {column.label}{' '}
+                  <section className="component__table-header">
+                    {column.label}
                     {sortField === column.id && (
                       <img
                         className={'sort-icon ' + sortDirection.toLowerCase()}
@@ -255,7 +240,8 @@ export const StickyHeaderTable: React.FC<SteakyHeaderProps> = ({
                 tabIndex={-1}
                 key={userIndex}
                 sx={{
-                  backgroundColor: userIndex % 2 !== 0 ? '#4a556123' : '',
+                  backgroundColor:
+                    userIndex % 2 !== 0 ? '#bebebe57' : '#ffffff80',
                 }}
               >
                 {columns.map((column: Column, columnIndex: number) =>
@@ -270,16 +256,6 @@ export const StickyHeaderTable: React.FC<SteakyHeaderProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
-
-      <TablePagination
-        rowsPerPageOptions={PAGE_SIZES}
-        component="div"
-        count={totalRowCount}
-        page={page}
-        rowsPerPage={pageSize}
-        onPageChange={(_, page) => handlePageChanged(page)}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
     </Paper>
   );
 };

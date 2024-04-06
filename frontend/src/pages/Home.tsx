@@ -16,7 +16,7 @@ import {
 import { StickyHeaderTable } from '../components/StickyHeaderTable';
 import { User } from '../shared/models/models';
 import { RootState } from '../store/store';
-import { Button } from '@mui/material';
+import { Button, TablePagination } from '@mui/material';
 import AddUserPopup from '../components/AddUserPopup';
 
 const intialFilters = {
@@ -26,6 +26,8 @@ const intialFilters = {
   sortField: 'phoneCode',
   sortDirection: 'ASC',
 };
+
+const PAGE_SIZES = [5, 10, 25, 100];
 
 const Home: React.FC = () => {
   // local:
@@ -81,58 +83,75 @@ const Home: React.FC = () => {
     page,
   ]);
 
-  const handleUserDeleted = (user: User) => {
-    dispatch(deleteUser({ userID: user.id }) as any);
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const size = +event.target.value;
+    setPage(0);
+    setPageSize(size);
   };
 
   return (
     <section className="page__home">
-      {/* <pre>{JSON.stringify(cache, null, 2)}</pre> */}
       <AddUserPopup
         open={openModal}
         onClose={() => setOpenModal(false)}
         onAdd={(user) => dispatch(addUser(user) as any)}
       />
-      <section className="row search">
+
+      <section className="container__logo">
+        <div className="earth">
+          <div></div>
+        </div>
+
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <filter id="motion-blur-filter" filterUnits="userSpaceOnUse">
+            <feGaussianBlur stdDeviation="100 0"></feGaussianBlur>
+          </filter>
+        </svg>
+        <span filter-content="S">Express Phonebook</span>
+      </section>
+
+      <section className="container__search">
         <h1>Search:</h1>
         <Input
           value={search}
           label="Search any field"
           onChange={(search) => setSearch(search)}
         />
+
+        <Button variant="contained" onClick={() => setOpenModal(true)}>
+          + Add
+        </Button>
       </section>
 
-      <Button
-        style={{
-          width: '15.625rem',
-          marginLeft: 'auto',
-          marginRight: 0,
-          marginBottom: '1rem',
-        }}
-        variant="contained"
-        onClick={() => setOpenModal(true)}
-      >
-        + Add User
-      </Button>
+      <section className="container__table">
+        <StickyHeaderTable
+          users={users}
+          originalUsers={originalUsers}
+          sortField={sortField}
+          sortDirection={sortDirection}
+          handleUserSaved={(user) => dispatch(updateUser(user) as any)}
+          handleUserDeleted={(user) =>
+            dispatch(deleteUser({ userID: user.id }) as any)
+          }
+          handleSortFieldChanged={setSortField}
+          handleSortDirectionChanged={setSortDirection}
+          handleUserChanged={(userId, field, value) =>
+            dispatch(setUser({ userId, field, value }))
+          }
+        />
+      </section>
 
-      <StickyHeaderTable
-        users={users}
-        originalUsers={originalUsers}
-        totalUsersCount={totalUsers}
+      <TablePagination
+        rowsPerPageOptions={PAGE_SIZES}
+        component="div"
+        count={totalUsers}
         page={page}
-        pageSize={pageSize}
-        sortField={sortField}
-        sortDirection={sortDirection}
-        handlePageChanged={setPage}
-        handlePageSizeChanged={setPageSize}
-        handleUserSaved={(user) => dispatch(updateUser(user) as any)}
-        handleUserDeleted={handleUserDeleted}
-        handleSortFieldChanged={setSortField}
-        handleSortDirectionChanged={setSortDirection}
-        handleUserChanged={(userId, field, value) =>
-          dispatch(setUser({ userId, field, value }))
-        }
-      ></StickyHeaderTable>
+        rowsPerPage={pageSize}
+        onPageChange={(_, page) => setPage(page)}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
     </section>
   );
 };

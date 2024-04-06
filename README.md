@@ -43,4 +43,4 @@ npm i
 ```bash
 npm start
 ```
-React will spin up a local server on http://localhost:3000/
+Once the fe is up and running, React will spin up a local server on http://localhost:3000/

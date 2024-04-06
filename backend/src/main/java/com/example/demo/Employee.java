@@ -11,7 +11,7 @@ public class Employee {
 
     private @Id @GeneratedValue Long id;
     private String name;
-    private String surname; 
+    private String surname;
     private String role;
     private String phoneCode;
     private String phoneNumber;

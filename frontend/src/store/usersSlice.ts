@@ -1,91 +1,190 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { fetchUsersData } from './api'; // Import your API function
-import { APIArgs, User, UsersState } from '../models/models';
+import { ADDUSER, DELETEUSER, GETUSERS, UPDATEUSER } from './api'; // Import your API function
+import { User } from '../shared/models/models';
+import { RootState } from './store';
+import {
+  ADDUSER_ARGS,
+  ApiError,
+  DELETEUSER_ARGS,
+  GETUSERS_ARGS,
+  Users,
+} from '../shared/models/api';
+import { UsersState } from '../shared/models/redux';
 
-// Define initial state
-const initialState: UsersState = {
-  ids: [],
-  entities: { users: {} },
-  totalUsers: 0, // Add totalUsers field to initial state
-  status: 'idle',
-  error: null,
-};
+let abortController: AbortController | null = null;
+const isUsers = (response: Users | ApiError): response is Users =>
+  '_links' in response;
 
-// Create async thunk for fetching users data
-export const fetchUsers = createAsyncThunk<
+const isUser = (response: User | ApiError): response is User =>
+  'name' in response;
+
+// GET
+export const getUsers = createAsyncThunk<
   { users: User[]; totalUsers: number },
-  APIArgs
->('users/fetchUsers', async (args, thunkAPI) => {
+  GETUSERS_ARGS,
+  { rejectValue: string | Error }
+>('users/getUsers', async (args, thunkAPI) => {
+  let signal: AbortSignal | undefined;
+  if (abortController) {
+    // If there is a previous request, abort it
+    abortController.abort();
+  }
+
+  // Create a new AbortController for the current request
+  abortController = new AbortController();
+  signal = abortController.signal;
+
+  const { getState } = thunkAPI;
+  const cache = (getState() as RootState).users.cache;
+  const cacheKey = JSON.stringify(args);
+  if (cache[cacheKey]) {
+    return cache[cacheKey]; // Return cached data if available
+  }
+
   try {
-    const response = await fetchUsersData(args);
-    if (!response.ok) {
-      throw new Error('Failed to fetch users');
-    }
-    const data = await response.json();
-    const users = data?._embedded?.employeeList as User[];
+    const response: Users | ApiError = await GETUSERS(args, signal); // Pass signal to fetch
 
-    // Calculate the total number of users based on the last page URL
-    let totalUsers = 0;
-    const lastPageUrl = data?._links?.last?.href;
-    if (lastPageUrl) {
-      const urlParams = new URLSearchParams(lastPageUrl);
-      const lastPage = +(urlParams?.get('page') ?? 0);
-      const pageSize = args.size;
-      totalUsers = pageSize * lastPage;
-    }
+    if (isUsers(response)) {
+      const users = response?._embedded?.employeeList ?? [];
 
-    return { users, totalUsers };
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error);
+      // Calculate the total number of users based on the last page URL
+      let totalUsers = +(response?._links?.totalUsers?.href ?? 0);
+      const payload = { users, totalUsers };
+      // cache: set
+      thunkAPI.dispatch(setCache({ key: cacheKey, value: payload }));
+
+      return payload;
+    } else {
+      throw new Error('Invalid response format');
+    }
+  } catch (error: any) {
+    // Reject the promise with the error message or the error object itself
+    return thunkAPI.rejectWithValue(error.message || error.toString());
+  } finally {
+    // Cleanup: Reset abortController
+    abortController = null;
   }
 });
 
-// Create users slice
+// PUT
+export const updateUser = createAsyncThunk<
+  { user: User },
+  User,
+  { rejectValue: string | Error }
+>('users/updateUser', async (args, thunkAPI) => {
+  try {
+    const user: User | ApiError = await UPDATEUSER(args);
+    if (isUser(user)) {
+      return { user };
+    } else {
+      throw new Error('Invalid response format');
+    }
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(error.message || error.toString());
+  }
+});
+
+// POST
+export const addUser = createAsyncThunk<
+  { user: User },
+  ADDUSER_ARGS,
+  { rejectValue: string | Error }
+>('users/addUser', async (args, thunkAPI) => {
+  try {
+    const user: User | ApiError = await ADDUSER(args);
+    if (isUser(user)) {
+      return { user };
+    } else {
+      throw new Error('Invalid response format');
+    }
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(error.message || error.toString());
+  }
+});
+
+// DELETE
+export const deleteUser = createAsyncThunk<
+  { success: boolean },
+  DELETEUSER_ARGS,
+  { rejectValue: string | Error }
+>('users/deleteUser', async (args, thunkAPI) => {
+  try {
+    const response: string | ApiError = await DELETEUSER(args);
+
+    if (typeof response === 'string') {
+      return { success: true };
+    } else {
+      throw new Error('Invalid response format');
+    }
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(error.message || error.toString());
+  }
+});
+
+/**
+ * Users Slice
+ */
+
+const initialState: UsersState = {
+  ids: [],
+  entities: { users: {}, originalUsers: {} },
+  totalUsers: 0, // Add totalUsers field to initial state
+  status: 'idle',
+  error: null,
+  cache: {},
+};
+
 export const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    setUsers: (state, action: PayloadAction<User[]>) => {
-      state.entities.users = {}; // Clear existing users
-      state.ids = []; // Clear existing IDs
-      action.payload.forEach((user) => {
-        state.entities.users[user.id] = user;
-        state.ids.push(user.id);
-      });
-    },
-    updateUserField: (
+    setUser: (
       state,
-      action: PayloadAction<{ userId: string; field: string; value: string }>,
+      action: PayloadAction<{ userId: number; field: string; value: string }>,
     ) => {
       const { userId, field, value } = action.payload;
-      if ((state.entities.users as any)?.[userId]?.[field]) {
+      if (
+        state.entities.users &&
+        state.entities.users[userId] &&
+        field in state.entities.users[userId]
+      ) {
         (state.entities.users as any)[userId][field] = value;
       }
     },
+    setCache: (state, action: PayloadAction<{ key: string; value: any }>) => {
+      const { key, value } = action.payload;
+      state.cache[key] = value;
+    },
   },
+
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUsers.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.error = null;
+      .addCase(getUsers.fulfilled, (state, action) => {
+        const { users, totalUsers } = action.payload;
         state.entities.users = {};
+        state.entities.originalUsers = {};
         state.ids = [];
-        action.payload.users.forEach((user) => {
+        users.forEach((user) => {
           state.entities.users[user.id] = user;
+          state.entities.originalUsers[user.id] = user;
           state.ids.push(user.id);
         });
-        state.totalUsers = action.payload.totalUsers; // Set totalUsers
+
+        state.totalUsers = totalUsers;
       })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message ?? 'Unknown error';
+      // invalidate cache: called on POST, PUT, DELETE
+      .addCase(addUser.fulfilled, (state, action) => {
+        return { ...state, cache: {} };
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        return { ...state, cache: {} };
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        return { ...state, cache: {} };
       });
   },
 });
 
 // Export actions and reducer
-export const { setUsers, updateUserField } = usersSlice.actions;
+export const { setUser, setCache } = usersSlice.actions;
 export default usersSlice.reducer;

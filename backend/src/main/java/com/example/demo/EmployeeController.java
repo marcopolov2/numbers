@@ -6,15 +6,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Tech: Spring MVC + Spring HATEOAS app with HAL representations of each
  * resource.
  */
+
 @CrossOrigin(origins = "*") // Allow requests from any origin
 @RestController
 class EmployeeController {
@@ -78,29 +79,34 @@ class EmployeeController {
                 .body(entityModel);
     }
 
-    // update
+    // put
     @PutMapping("/employees/{id}")
     ResponseEntity<?> replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
+        try {
+            Employee updatedEmployee = repository.findById(id) //
+                    .map(employee -> {
+                        employee.setName(newEmployee.getName());
+                        employee.setSurname(newEmployee.getSurname());
+                        employee.setPhoneCode(newEmployee.getPhoneCode());
+                        employee.setPhoneNumber(newEmployee.getPhoneNumber());
+                        return repository.save(employee);
+                    }) //
+                    .orElseGet(() -> {
+                        newEmployee.setId(id);
+                        return repository.save(newEmployee);
+                    });
 
-        Employee updatedEmployee = repository.findById(id) //
-                .map(employee -> {
-                    employee.setName(newEmployee.getName());
-                    employee.setSurname(newEmployee.getSurname());
-                    employee.setRole(newEmployee.getRole());
-                    employee.setPhoneCode(newEmployee.getPhoneCode());
-                    employee.setPhoneNumber(newEmployee.getPhoneNumber());
-                    return repository.save(employee);
-                }) //
-                .orElseGet(() -> {
-                    newEmployee.setId(id);
-                    return repository.save(newEmployee);
-                });
+            EntityModel<Employee> entityModel = assembler.toModel(updatedEmployee);
 
-        EntityModel<Employee> entityModel = assembler.toModel(updatedEmployee);
-
-        return ResponseEntity //
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
-                .body(entityModel);
+            return ResponseEntity //
+                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                    .body(entityModel);
+        } catch (Exception ex) {
+            // Handle any exceptions that might occur during the update process
+            return ResponseEntity //
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR) //
+                    .body("An error occurred while updating the employee: " + ex.getMessage());
+        }
     }
 
     // delete
@@ -109,100 +115,14 @@ class EmployeeController {
         Optional<Employee> optionalEmployee = repository.findById(id);
         if (optionalEmployee.isPresent()) {
             repository.deleteById(id);
-            return ResponseEntity.ok("Employee with ID " + id + " deleted successfully");
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                    .body("Employee with ID " + id + " deleted successfully");
         } else {
             // Employee with the given ID was not found
             return ResponseEntity.notFound().build();
         }
     }
 
-    // search
-    @GetMapping("/employees/search")
-    CollectionModel<EntityModel<Employee>> search(@RequestParam(required = false) String search) {
-        List<Employee> employees;
-
-        if (search != null && !search.isEmpty()) {
-            // Implement your search logic here based on the provided search parameter
-            // For example, searching by name, surname, phoneCode, phoneNumber, etc.
-            // Here's a simple example using Java streams to filter employees
-            employees = repository.findAll().stream()
-                    .filter(employee -> employee.getName().toLowerCase().contains(search.toLowerCase()) ||
-                            employee.getSurname().toLowerCase().contains(search.toLowerCase()) ||
-                            employee.getPhoneCode().toLowerCase().contains(search.toLowerCase()) ||
-                            employee.getPhoneNumber().toLowerCase().contains(search.toLowerCase()))
-                    .collect(Collectors.toList());
-        } else {
-            // If search parameter is not provided, return all employees
-            employees = repository.findAll();
-        }
-
-        List<EntityModel<Employee>> employeeModels = employees.stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
-
-        return CollectionModel.of(employeeModels, linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
-    }
-
-    // sort
-    @GetMapping("/employees/sort")
-    CollectionModel<EntityModel<Employee>> sortEmployees(@RequestParam String field,
-            @RequestParam(defaultValue = "ASC") String direction) {
-        Sort sort = Sort.by(Sort.Direction.fromString(direction), field);
-
-        List<Employee> sortedEmployees = repository.findAll(sort);
-
-        List<EntityModel<Employee>> employeeModels = sortedEmployees.stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
-
-        return CollectionModel.of(employeeModels, linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
-    }
-
-    // pagination
-    @GetMapping("/employees/paginate")
-    CollectionModel<EntityModel<Employee>> paginateEmployees(@RequestParam int size, @RequestParam int page) {
-        Page<Employee> employeePage = repository.findAll(PageRequest.of(page, size));
-
-        List<EntityModel<Employee>> employeeModels = employeePage.getContent().stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
-
-        // Calculate total pages count
-        int totalPages = employeePage.getTotalPages();
-
-        // Add self-relational link with pagination parameters
-        Link selfLink = Link.of(String.format("/employees/paginate?size=%d&page=%d", size, page)).withSelfRel();
-
-        // Add pagination links
-        Link nextLink = null;
-        if (page < totalPages - 1) {
-            nextLink = Link.of(
-                    String.format("/employees/paginate?size=%d&page=%d", size, page + 1), "next");
-        }
-
-        Link prevLink = null;
-        if (page > 0) {
-            prevLink = Link.of(String.format("/employees/paginate?size=%d&page=%d", size, page - 1), "prev");
-        }
-
-        Link lastLink = Link.of(String.format("/employees/paginate?size=%d&page=%d", size, totalPages - 1), "last");
-
-        // Create CollectionModel with employeeModels and selfLink
-        CollectionModel<EntityModel<Employee>> collectionModel = CollectionModel.of(employeeModels, selfLink);
-
-        // Add pagination links
-        if (nextLink != null) {
-            collectionModel.add(nextLink);
-        }
-        if (prevLink != null) {
-            collectionModel.add(prevLink);
-        }
-        collectionModel.add(lastLink);
-
-        return collectionModel;
-    }
-
-    // search + sort + paginate
     @GetMapping("/employees/v2")
     CollectionModel<EntityModel<Employee>> getAdvancedAllEmployees(
             @RequestParam(required = false) String search,
@@ -230,18 +150,28 @@ class EmployeeController {
         // Sorting logic
         if (field != null && !field.isEmpty()) {
             employees.sort((emp1, emp2) -> {
+                int result;
                 switch (field) {
                     case "name":
-                        return emp1.getName().compareTo(emp2.getName());
+                        result = emp1.getName().compareTo(emp2.getName());
+                        break;
                     case "surname":
-                        return emp1.getSurname().compareTo(emp2.getSurname());
+                        result = emp1.getSurname().compareTo(emp2.getSurname());
+                        break;
                     case "phoneCode":
-                        return emp1.getPhoneCode().compareTo(emp2.getPhoneCode());
+                        // Convert phone codes to integers for numerical comparison
+                        int phoneCode1 = Integer.parseInt(emp1.getPhoneCode());
+                        int phoneCode2 = Integer.parseInt(emp2.getPhoneCode());
+                        result = Integer.compare(phoneCode1, phoneCode2);
+                        break;
                     case "phoneNumber":
-                        return emp1.getPhoneNumber().compareTo(emp2.getPhoneNumber());
+                        result = emp1.getPhoneNumber().compareTo(emp2.getPhoneNumber());
+                        break;
                     default:
-                        return 0;
+                        result = 0;
+                        break;
                 }
+                return direction.equalsIgnoreCase("ASC") ? result : -result;
             });
         }
 
@@ -251,6 +181,9 @@ class EmployeeController {
         int endIndex = Math.min(startIndex + size, employees.size());
         employeePage = new PageImpl<>(employees.subList(startIndex, endIndex),
                 PageRequest.of(adjustedPage, size), employees.size());
+
+        // Recalculate total users based on the new size
+        int totalUsers = employees.size();
 
         List<EntityModel<Employee>> employeeModels = employeePage.getContent().stream()
                 .map(assembler::toModel)
@@ -272,7 +205,11 @@ class EmployeeController {
                         employeePage.getTotalPages()))
                 .withRel("last");
 
-        return CollectionModel.of(employeeModels, selfLink, nextLink, prevLink, lastLink);
+        Link t = Link.of(String.valueOf(totalUsers)).withRel("totalUsers");
+
+        // Create a CollectionModel and add root information and employee models
+        return CollectionModel.of(employeeModels, selfLink, nextLink, prevLink, lastLink, t);
+
     }
 
 }

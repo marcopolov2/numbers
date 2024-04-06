@@ -29,20 +29,50 @@ body {
   }
 }
 
-.container {
-  .row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.5rem;
-    margin: 2rem;
+.page__home {
+  width: 100vw;
+  height: 100vh;
+  padding: 1rem;
+}
+
+h1 {
+  color: #1976d2;
+  padding: 1rem;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.search {
+  Input {
+    width: 300px;
   }
 }
 
-.container.row {
+.table-header {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.2rem;
-  margin: 2rem;
+  gap: 1rem;
+}
+
+.sort-icon {
+  width: 10px;
+  height: 15px;
+  color: #ad562e21;
+}
+
+.sort-icon.asc {
+  transform: rotate(180deg);
+}
+
+.sort-icon.desc {
+  transform: rotate(0);
+}
+
+/* MUI overrides */
+
+Button {
+  height: 35px;
 }

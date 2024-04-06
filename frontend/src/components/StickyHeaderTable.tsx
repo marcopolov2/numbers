@@ -7,73 +7,127 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { Column, User } from '../models/models';
 import CountrySelect from './CountrySelect';
 import Input from './Input';
 import { Button } from '@mui/material';
+import arrowImage from '../assets/images/arrow.png';
+import {
+  isNameValid,
+  isPhoneNumberValid,
+  isUserValid,
+} from '../shared/utility';
+import { User } from '../shared/models/models';
+import { Column } from '../shared/models/ui';
+
+const PAGE_SIZES = [5, 10, 25, 100];
+
+const isUserChanged = (user: User, newUser: User | undefined): boolean => {
+  if (!newUser) {
+    return true;
+  }
+
+  for (const key in user) {
+    if (Object.prototype.hasOwnProperty.call(user, key)) {
+      const userValue = (user as any)?.[key];
+      const newUserValue = (newUser as any)?.[key];
+
+      if (userValue !== newUserValue) {
+        return true;
+      }
+    }
+  }
+
+  for (const key in newUser) {
+    if (!(key in user)) {
+      return true;
+    }
+  }
+
+  return false;
+};
 
 const columns: readonly Column[] = [
-  { id: 'phoneCode', label: 'Phone Code', minWidth: 100 },
+  { id: 'phoneCode', label: 'Phone Code', minWidth: 260 },
   { id: 'phoneNumber', label: 'Phone Number', minWidth: 100 },
-  { id: 'firstName', label: 'First Name', minWidth: 100 },
-  { id: 'lastName', label: 'Last Name', minWidth: 100 },
+  { id: 'name', label: 'First Name', minWidth: 100 },
+  { id: 'surname', label: 'Last Name', minWidth: 100 },
 ];
 
 const createData = (
   id: number,
-  phoneCode: string,
-  phoneNumber: string,
   name: string,
   surname: string,
+  phoneCode: string,
+  phoneNumber: string,
 ): User => {
   return { id, phoneCode, phoneNumber, name, surname };
 };
 
 interface SteakyHeaderProps {
   // inputs:
-  rows: User[];
-  totalRowCount: number;
+  users: User[];
+  originalUsers: User[];
+  totalUsersCount: number;
+  sortField: string;
+  sortDirection: string;
+  page: number;
+  pageSize: number;
 
   // outputs:
   handlePageChanged: (page: number) => void;
   handlePageSizeChanged: (pageSize: number) => void;
-  handleRowChanged: (row: User) => void;
+  handleSortFieldChanged: (column: string) => void;
+  handleSortDirectionChanged: (sort: 'ASC' | 'DESC') => void;
+  handleUserChanged: (userID: number, field: string, value: string) => void;
+  handleUserSaved: (user: User) => void;
+  handleUserDeleted: (user: User) => void;
 }
 
-/**
- * Inputs: rows (users)
- * Outputs:
- *  1. when pagination changed
- *  2. row changed (with updated values)
- */
 export const StickyHeaderTable: React.FC<SteakyHeaderProps> = ({
-  rows = [],
-  totalRowCount = 0,
-  handlePageChanged = (page: number) => {},
-  handlePageSizeChanged = (pageSize: number) => {},
-  handleRowChanged = (row: User) => {},
+  users,
+  originalUsers,
+  totalUsersCount: totalRowCount,
+  page,
+  pageSize,
+  sortField,
+  sortDirection,
+  handlePageChanged,
+  handlePageSizeChanged,
+  handleSortFieldChanged,
+  handleSortDirectionChanged,
+  handleUserChanged,
+  handleUserSaved,
+  handleUserDeleted,
 }) => {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
   useEffect(() => {
-    rows.forEach((row) =>
-      createData(row.id, row.phoneCode, row.phoneNumber, row.name, row.surname),
+    users.forEach((user) =>
+      createData(
+        user.id,
+        user.name,
+        user.surname,
+        user.phoneCode,
+        user.phoneNumber,
+      ),
     );
-  }, [rows]);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-    handlePageChanged(newPage); //output
-  };
+  }, [users]);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const size = +event.target.value;
-    setRowsPerPage(size);
-    setPage(0);
-    handlePageSizeChanged(size); //output
+    handlePageChanged(0);
+    handlePageSizeChanged(size);
+  };
+
+  const tableHeaderClicked = (sortField_: string) => {
+    const newSortDirection =
+      sortField === sortField_
+        ? sortDirection === 'ASC'
+          ? 'DESC'
+          : 'ASC'
+        : 'ASC';
+    handleSortFieldChanged(sortField_);
+    handleSortDirectionChanged(newSortDirection);
   };
 
   const renderColumn = (
@@ -85,32 +139,45 @@ export const StickyHeaderTable: React.FC<SteakyHeaderProps> = ({
 
     switch (columnId) {
       case 'phoneCode':
-        cellContent = <CountrySelect countryCode={user.phoneCode} />;
+        cellContent = (
+          <CountrySelect
+            countryCode={user.phoneCode}
+            onChange={(code) => handleUserChanged(user.id, 'phoneCode', code)}
+          />
+        );
         break;
       case 'phoneNumber':
         cellContent = (
           <Input
             value={user?.phoneNumber ?? ''}
             label="Phone Number (min 7 characters)"
-            helperText="Please enter a valid phone number"
+            helperText="Enter a valid phone number"
+            validate={isPhoneNumberValid}
+            onChange={(phoneNumber) =>
+              handleUserChanged(user.id, 'phoneNumber', phoneNumber)
+            }
           />
         );
         break;
-      case 'firstName':
+      case 'name':
         cellContent = (
           <Input
             value={user?.name ?? ''}
             label="Name"
-            helperText="Please enter a valid name"
+            helperText="Enter a valid name"
+            validate={isNameValid}
+            onChange={(name) => handleUserChanged(user.id, 'name', name)}
           />
         );
         break;
-      case 'lastName':
+      case 'surname':
         cellContent = (
           <Input
             value={user?.surname ?? ''}
             label="Surname"
-            helperText="Please enter a valid surname"
+            helperText="Enter a valid surname"
+            validate={isNameValid}
+            onChange={(name) => handleUserChanged(user.id, 'surname', name)}
           />
         );
         break;
@@ -121,61 +188,96 @@ export const StickyHeaderTable: React.FC<SteakyHeaderProps> = ({
     return (
       <TableCell
         key={columnId}
-        sx={isLastColumn ? { display: 'flex', gap: '1rem' } : {}}
+        sx={
+          isLastColumn
+            ? { display: 'flex', gap: '1rem', justifyContent: 'space-between' }
+            : {}
+        }
       >
         {cellContent}
-        {isLastColumn && <Button variant="contained">Save</Button>}
+        {isLastColumn && (
+          <>
+            <Button
+              variant="contained"
+              disabled={
+                !isUserChanged(
+                  user,
+                  originalUsers.find((user_) => user_?.id === user?.id),
+                ) || !isUserValid(user)
+              }
+              onClick={() => handleUserSaved(user)}
+            >
+              Save
+            </Button>
+
+            <Button variant="contained" onClick={() => handleUserDeleted(user)}>
+              Delete
+            </Button>
+          </>
+        )}
       </TableCell>
     );
   };
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ minHeight: 800 }}>
+    <Paper>
+      <TableContainer sx={{ minHeight: 800, minWidth: 1020 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
-            <TableRow>
-              {columns.map((column) => (
+            <TableRow sx={{ '& th': { backgroundColor: '#1976d238' } }}>
+              {columns.map((column: Column) => (
                 <TableCell
+                  sx={{ cursor: 'pointer', userSelect: 'none' }}
                   key={column.id}
                   style={{ minWidth: column.minWidth }}
+                  onClick={() => tableHeaderClicked(column.id)}
                 >
-                  {column.label}
+                  <section className="table-header">
+                    {column.label}{' '}
+                    {sortField === column.id && (
+                      <img
+                        className={'sort-icon ' + sortDirection.toLowerCase()}
+                        src={arrowImage}
+                        alt=""
+                      />
+                    )}
+                  </section>
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <TableRow
-                  hover
-                  role="checkbox"
-                  tabIndex={-1}
-                  key={row.phoneCode + row.phoneNumber}
-                >
-                  {columns.map((column: Column, columnIndex: number) =>
-                    renderColumn(
-                      column.id,
-                      row,
-                      columnIndex === columns.length - 1,
-                    ),
-                  )}
-                </TableRow>
-              ))}
+            {users.map((user, userIndex) => (
+              <TableRow
+                hover
+                role="checkbox"
+                tabIndex={-1}
+                key={userIndex}
+                sx={{
+                  backgroundColor: userIndex % 2 !== 0 ? '#4a556123' : '',
+                }}
+              >
+                {columns.map((column: Column, columnIndex: number) =>
+                  renderColumn(
+                    column.id,
+                    user,
+                    columnIndex === columns.length - 1,
+                  ),
+                )}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
 
       <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
+        rowsPerPageOptions={PAGE_SIZES}
         component="div"
         count={totalRowCount}
-        rowsPerPage={rowsPerPage}
         page={page}
-        onPageChange={handleChangePage}
+        rowsPerPage={pageSize}
+        onPageChange={(_, page) => handlePageChanged(page)}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </Paper>

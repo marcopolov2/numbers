@@ -1,11 +1,10 @@
 export const APIS = {
   LOCAL: 'http://localhost:8080',
-  API_BASE: '/employees/v2',
-}
+  API_BASE: '/employees',
+};
 
 // From https://bitbucket.org/atlassian/atlaskit-mk-2/raw/4ad0e56649c3e6c973e226b7efaeb28cb240ccb0/packages/core/select/src/data/countries.js
 export const countries = [
-  { code: '', label: '', phone: '' },
   { code: 'AD', label: 'Andorra', phone: '376' },
   {
     code: 'AE',
@@ -428,4 +427,4 @@ export const countries = [
   { code: 'ZA', label: 'South Africa', phone: '27' },
   { code: 'ZM', label: 'Zambia', phone: '260' },
   { code: 'ZW', label: 'Zimbabwe', phone: '263' },
-]
+];

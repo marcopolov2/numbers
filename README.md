@@ -1,6 +1,6 @@
 # Express Phonebook
 
-# Navigate the world of phone numbers!
+## Navigate the world of phone numbers!
 
 ## Description
 

@@ -51,9 +51,7 @@ Once the fe is up and running, React will spin up a local server on http://local
 ```bash
 CURL Requests:
 ```
-
-```bash
-GET (search, sort, paginate):
+## GET (search, sort, paginate):
 Parameters:
 1. search (string)
 2. field (string) sorting column
@@ -61,6 +59,7 @@ Parameters:
 4. page (number) paginate size
 5. size (number) paginate page size
 
+```bash
 curl -X GET "http://localhost:8080/employees/v2?search={search}&field={field}&direction={direction}&size={size}&page={page}" -H "Content-Type: application/json"
 ```
 ```bash

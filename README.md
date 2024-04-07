@@ -47,7 +47,6 @@ npm start
 ```
 Once the fe is up and running, React will spin up a local server on http://localhost:3000/
 
-
 ```bash
 CURL Requests:
 ```
@@ -62,12 +61,34 @@ Parameters:
 ```bash
 curl -X GET "http://localhost:8080/employees/v2?search={search}&field={field}&direction={direction}&size={size}&page={page}" -H "Content-Type: application/json"
 ```
+
+## DELETE
+Parameters:
+1. userID (number)
+
 ```bash
-curl -X DELETE "http://localhost:8080/employees/23" -H "Content-Type: application/json"
+curl -X DELETE "http://localhost:8080/employees/{userID}" -H "Content-Type: application/json"
 ```
+
+## POST
+Parameters:
+1. name (string)
+2. surname (string)
+3. phoneCode (string)
+4. phoneNumber (string)
+
 ```bash
-curl -X POST "http://localhost:8080/employees" -H "Content-Type: application/json" -d "{\"name\": \"John\", \"surname\": \"Baggins\", \"phoneCode\": \"27\", \"phoneNumber\": \"737383738\"}"
+curl -X POST "http://localhost:8080/employees" -H "Content-Type: application/json" -d "{\"name\": \"{name}\", \"surname\": \"{surname}\", \"phoneCode\": \"{phoneCode}\", \"phoneNumber\": \"{phoneNumber}\"}"
 ```
+
+## PUT
+Parameters:
+1. userID (number)
+2. name (string)
+3. surname (string)
+4. phoneCode (string)
+5. phoneNumber (string)
+
 ```bash
-curl -X PUT "http://localhost:8080/employees/1" -H "Content-Type: application/json" -d "{\"name\": \"Bilbo-v2\", \"surname\": \"Baggins\", \"phoneCode\": \"27\", \"phoneNumber\": \"737383738\"}"
+curl -X PUT "http://localhost:8080/employees/{userID}" -H "Content-Type: application/json" -d "{\"name\": \"{name}\", \"surname\": \"{surname}\", \"phoneCode\": \"{phoneCode}\", \"phoneNumber\": \"{phoneNumber}\"}"
 ```

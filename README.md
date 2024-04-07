@@ -48,7 +48,7 @@ npm start
 Once the fe is up and running, React will spin up a local server on http://localhost:3000/
 
 
-##CURL Requests:
+## CURL Requests:
 
 ## GET (search, sort, paginate):
 Parameters:

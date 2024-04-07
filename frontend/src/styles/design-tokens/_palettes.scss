@@ -1,0 +1,332 @@
+// Shades
+:root {
+  --shades-0: hsl(0 0% 100% / 100%);
+
+  --shades-100: hsl(0 0% 0% / 100%);
+}
+
+// Primary Palette Azure
+:root {
+  --azure-50: hsl(206 100% 92% / 100%);
+
+  --azure-100: hsl(206 100% 88% / 100%);
+
+  --azure-200: hsl(206 100% 83% / 100%);
+
+  --azure-300: hsl(206 100% 76% / 100%);
+
+  --azure-400: hsl(206 100% 66% / 100%);
+
+  --azure-500: hsl(206 100% 52% / 100%);
+
+  --azure-600: hsl(207 92% 35% / 100%);
+
+  --azure-700: hsl(208 90% 24% / 100%);
+
+  --azure-800: hsl(208 88% 16% / 100%);
+
+  --azure-900: hsl(208 84% 12% / 100%);
+}
+
+// Primary Palette Midnight
+:root {
+  --midnight-blue-50: hsl(215 39% 68% / 100%);
+
+  --midnight-blue-100: hsl(214 32% 62% / 100%);
+
+  --midnight-blue-200: hsl(214 23% 50% / 100%);
+
+  --midnight-blue-300: hsl(215 25% 39% / 100%);
+
+  --midnight-blue-400: hsl(215 32% 27% / 100%);
+
+  --midnight-blue-500: hsl(214 50% 16% / 100%);
+
+  --midnight-blue-600: hsl(214 50% 13% / 100%);
+
+  --midnight-blue-700: hsl(215 50% 9% / 100%);
+
+  --midnight-blue-800: hsl(214 50% 6% / 100%);
+
+  --midnight-blue-900: hsl(218 50% 3% / 100%);
+}
+
+// Secondary Palette Powder Blue
+:root {
+  --powder-blue-50: hsl(204 56% 98% / 100%);
+
+  --powder-blue-100: hsl(213 65% 97% / 100%);
+
+  --powder-blue-200: hsl(211 64% 94% / 100%);
+
+  --powder-blue-300: hsl(211 61% 90% / 100%);
+
+  --powder-blue-400: hsl(211 61% 87% / 100%);
+
+  --powder-blue-500: hsl(211 62% 84% / 100%);
+
+  --powder-blue-600: hsl(212 40% 72% / 100%);
+
+  --powder-blue-700: hsl(210 31% 60% / 100%);
+
+  --powder-blue-800: hsl(211 28% 49% / 100%);
+
+  --powder-blue-900: hsl(210 40% 37% / 100%);
+}
+
+// Secondary Palette Frosty White
+:root {
+  --frosty-white-50: hsl(0 0% 100% 1 / 100%);
+
+  --frosty-white-100: hsl(240 20% 99% / 100%);
+
+  --frosty-white-200: hsl(210 20% 98% / 100%);
+
+  --frosty-white-300: hsl(225 29% 97% / 100%);
+
+  --frosty-white-400: hsl(216 26% 96% / 100%);
+
+  --frosty-white-500: hsl(220 25% 95% / 100%);
+
+  --frosty-white-600: hsl(220 18% 84% / 100%);
+
+  --frosty-white-700: hsl(219 16% 72% / 100%);
+
+  --frosty-white-800: hsl(221 15% 61% / 100%);
+
+  --frosty-white-900: hsl(220 16% 49% / 100%);
+}
+
+// Secondary Palette Mint Green
+:root {
+  --mint-green-50: hsl(150 50% 98% / 100%);
+
+  --mint-green-100: hsl(153 53% 97% / 100%);
+
+  --mint-green-200: hsl(152 58% 94% / 100%);
+
+  --mint-green-300: hsl(149 55% 90% / 100%);
+
+  --mint-green-400: hsl(149 57% 87% / 100%);
+
+  --mint-green-500: hsl(150 56% 84% / 100%);
+
+  --mint-green-600: hsl(149 36% 72% / 100%);
+
+  --mint-green-700: hsl(151 28% 61% / 100%);
+
+  --mint-green-800: hsl(150 25% 49% / 100%);
+
+  --mint-green-900: hsl(150 36% 37% / 100%);
+}
+
+// Tertiary Palette Cool Green
+:root {
+  --cool-green-50: hsl(160 60% 99% / 100%);
+
+  --cool-green-100: hsl(150 60% 98% / 100%);
+
+  --cool-green-200: hsl(150 60% 96% / 100%);
+
+  --cool-green-300: hsl(150 53% 94% / 100%);
+
+  --cool-green-400: hsl(150 55% 92% / 100%);
+
+  --cool-green-500: hsl(150 56% 90% / 100%);
+
+  --cool-green-600: hsl(149 38% 79% / 100%);
+
+  --cool-green-700: hsl(150 32% 67% / 100%);
+
+  --cool-green-800: hsl(150 29% 55% / 100%);
+
+  --cool-green-900: hsl(150 35% 44% / 100%);
+}
+
+// Tertiary Palette Cold Blue
+:root {
+  --cold-blue-50: hsl(240 100% 99% / 100%);
+
+  --cold-blue-100: hsl(232 100% 97% / 100%);
+
+  --cold-blue-200: hsl(234 100% 94% / 100%);
+
+  --cold-blue-300: hsl(235 100% 91% / 100%);
+
+  --cold-blue-400: hsl(235 100% 88% / 100%);
+
+  --cold-blue-500: hsl(234 100% 85% / 100%);
+
+  --cold-blue-600: hsl(234 65% 74% / 100%);
+
+  --cold-blue-700: hsl(235 52% 62% / 100%);
+
+  --cold-blue-800: hsl(234 45% 51% / 100%);
+
+  --cold-blue-900: hsl(234 64% 39% / 100%);
+}
+
+// Tertiary Palette Rusty Orange
+:root {
+  --rusty-orange-50: hsl(35 86% 97% / 100%);
+
+  --rusty-orange-100: hsl(30 92% 95% / 100%);
+
+  --rusty-orange-200: hsl(31 89% 89% / 100%);
+
+  --rusty-orange-300: hsl(31 90% 84% / 100%);
+
+  --rusty-orange-400: hsl(31 89% 79% / 100%);
+
+  --rusty-orange-500: hsl(31 90% 74% / 100%);
+
+  --rusty-orange-600: hsl(31 58% 62% / 100%);
+
+  --rusty-orange-700: hsl(31 40% 50% / 100%);
+
+  --rusty-orange-800: hsl(31 46% 39% / 100%);
+
+  --rusty-orange-900: hsl(31 58% 27% / 100%);
+}
+
+// Tertiary Palette Olive Green
+:root {
+  --olive-green-50: hsl(80 60% 97% / 100%);
+
+  --olive-green-100: hsl(80 60% 94% / 100%);
+
+  --olive-green-200: hsl(79 59% 88% / 100%);
+
+  --olive-green-300: hsl(78 58% 82% / 100%);
+
+  --olive-green-400: hsl(78 58% 77% / 100%);
+
+  --olive-green-500: hsl(79 58% 71% / 100%);
+
+  --olive-green-600: hsl(78 38% 59% / 100%);
+
+  --olive-green-700: hsl(79 28% 48% / 100%);
+
+  --olive-green-800: hsl(79 32% 36% / 100%);
+
+  --olive-green-900: hsl(79 38% 25% / 100%);
+}
+
+// Tertiary Palette Vivid Turquise
+:root {
+  --vivid-turquise-50: hsl(159 92% 95% / 100%);
+
+  --vivid-turquise-100: hsl(160 88% 90% / 100%);
+
+  --vivid-turquise-200: hsl(161 88% 80% / 100%);
+
+  --vivid-turquise-300: hsl(161 88% 70% / 100%);
+
+  --vivid-turquise-400: hsl(161 88% 60% / 100%);
+
+  --vivid-turquise-500: hsl(161 89% 50% / 100%);
+
+  --vivid-turquise-600: hsl(161 89% 40% / 100%);
+
+  --vivid-turquise-700: hsl(161 89% 30% / 100%);
+
+  --vivid-turquise-800: hsl(161 88% 20% / 100%);
+
+  --vivid-turquise-900: hsl(160 88% 10% / 100%);
+}
+
+// Tertiary Palette Dirty Pink
+:root {
+  --dirty-pink-50: hsl(347 100% 98% / 100%);
+
+  --dirty-pink-100: hsl(353 100% 97% / 100%);
+
+  --dirty-pink-200: hsl(353 100% 93% / 100%);
+
+  --dirty-pink-300: hsl(351 100% 90% / 100%);
+
+  --dirty-pink-400: hsl(351 100% 86% / 100%);
+
+  --dirty-pink-500: hsl(352 100% 83% / 100%);
+
+  --dirty-pink-600: hsl(352 66% 72% / 100%);
+
+  --dirty-pink-700: hsl(351 50% 60% / 100%);
+
+  --dirty-pink-800: hsl(352 45% 48% / 100%);
+
+  --dirty-pink-900: hsl(351 64% 37% / 100%);
+}
+
+// Tertiary Palette Sea Green
+:root {
+  --sea-green-50: hsl(169 73% 97% / 100%);
+
+  --sea-green-100: hsl(164 79% 95% / 100%);
+
+  --sea-green-200: hsl(165 79% 89% / 100%);
+
+  --sea-green-300: hsl(165 77% 83% / 100%);
+
+  --sea-green-400: hsl(166 77% 78% / 100%);
+
+  --sea-green-500: hsl(165 77% 72% / 100%);
+
+  --sea-green-600: hsl(165 49% 61% / 100%);
+
+  --sea-green-700: hsl(165 35% 49% / 100%);
+
+  --sea-green-800: hsl(165 41% 37% / 100%);
+
+  --sea-green-900: hsl(165 51% 26% / 100%);
+}
+
+// Tertiary Palette Mustard Yellow
+:root {
+  --mustard-yellow-50: hsl(46 76% 97% / 100%);
+
+  --mustard-yellow-100: hsl(48 71% 93% / 100%);
+
+  --mustard-yellow-200: hsl(48 74% 86% / 100%);
+
+  --mustard-yellow-300: hsl(48 73% 79% / 100%);
+
+  --mustard-yellow-400: hsl(48 74% 73% / 100%);
+
+  --mustard-yellow-500: hsl(48 74% 66% / 100%);
+
+  --mustard-yellow-600: hsl(48 46% 54% / 100%);
+
+  --mustard-yellow-700: hsl(48 41% 43% / 100%);
+
+  --mustard-yellow-800: hsl(49 44% 31% / 100%);
+
+  --mustard-yellow-900: hsl(48 49% 19% / 100%);
+}
+
+// Tertiary Palette Lavender Purple
+:root {
+  --lavender-purple-50: hsl(300 78% 98% / 100%);
+
+  --lavender-purple-100: hsl(300 68% 96% / 100%);
+
+  --lavender-purple-200: hsl(300 68% 93% / 100%);
+
+  --lavender-purple-300: hsl(299 71% 89% / 100%);
+
+  --lavender-purple-400: hsl(299 71% 85% / 100%);
+
+  --lavender-purple-500: hsl(299 70% 82% / 100%);
+
+  --lavender-purple-600: hsl(299 45% 70% / 100%);
+
+  --lavender-purple-700: hsl(299 34% 58% / 100%);
+
+  --lavender-purple-800: hsl(299 32% 47% / 100%);
+
+  --lavender-purple-900: hsl(299 45% 35% / 100%);
+}
+
+:root {
+  --box-shadow-inner: hsl(180deg 5.38% 81.76% / 50%);
+}

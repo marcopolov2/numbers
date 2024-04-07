@@ -8,18 +8,34 @@ import {
 } from '../shared/models/api';
 import { User } from '../shared/models/models';
 
-export const GETUSERS = async (
-  args: GETUSERS_ARGS,
+const commonHeaders = { 'Content-Type': 'application/json' };
+
+type FetchFunction<T> = (
+  url: string,
+  options: RequestInit,
+  responseType: 'string' | 'json',
   signal?: AbortSignal,
-): Promise<Users | ApiError> => {
+) => Promise<T | ApiError>;
+
+const fetchApi: FetchFunction<any> = async (
+  url,
+  options,
+  responseType,
+  signal,
+) => {
   try {
-    const url = `${APIS.LOCAL}${APIS.API_BASE}/v2?search=${args.search}&field=${args.sortField}&direction=${args.sortDirection}&size=${args.pageSize}&page=${args.page}`;
-    const response = await fetch(url, { signal });
+    const response = await fetch(url, { ...options, signal });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch users');
+      throw new Error(`Failed to fetch data from ${url}`);
     }
-    const data: Users = await response.json();
+
+    let data: any;
+    if (responseType === 'json') {
+      data = await response.json();
+    } else {
+      data = await response.text();
+    }
     return data;
   } catch (error: any) {
     const fetchError: ApiError = {
@@ -28,103 +44,66 @@ export const GETUSERS = async (
     };
     return fetchError;
   }
+};
+
+export const GETUSERS = async (
+  args: GETUSERS_ARGS,
+  signal?: AbortSignal,
+): Promise<Users | ApiError> => {
+  const url = `${APIS.LOCAL}${APIS.API_BASE}/v2?search=${args.search.trim()}&field=${args.sortField}&direction=${args.sortDirection}&size=${args.pageSize}&page=${args.page}`;
+  return fetchApi(url, {}, 'json', signal);
 };
 
 export const ADDUSER = async (
   args: ADDUSER_ARGS,
   signal?: AbortSignal,
 ): Promise<User | ApiError> => {
-  try {
-    const url = `${APIS.LOCAL}${APIS.API_BASE}?name=${args.name}&surname=${args.surname}&phoneCode=${args.phoneCode}&phoneNumber=${args.phoneNumber}`;
-    const body = JSON.stringify({
-      name: args.name,
-      surname: args.surname,
-      phoneCode: args.phoneCode,
-      phoneNumber: args.phoneNumber,
-    });
+  const url = `${APIS.LOCAL}${APIS.API_BASE}`;
+  const body = JSON.stringify({
+    name: args.name,
+    surname: args.surname,
+    phoneCode: args.phoneCode,
+    phoneNumber: args.phoneNumber,
+  });
 
-    const response = await fetch(url, {
-      method: 'POST',
-      body,
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to add users');
-    }
-
-    const data: User = await response.json();
-    return data;
-  } catch (error: any) {
-    const fetchError: ApiError = {
-      message: error?.message ?? 'Unknown error',
-      status: error?.status ?? '',
-    };
-    return fetchError;
-  }
+  return fetchApi(
+    url,
+    { method: 'POST', body, headers: commonHeaders },
+    'json',
+    signal,
+  );
 };
 
 export const UPDATEUSER = async (
   args: User,
   signal?: AbortSignal,
 ): Promise<User | ApiError> => {
-  try {
-    const url = `${APIS.LOCAL}${APIS.API_BASE}/${args.id}`;
+  const url = `${APIS.LOCAL}${APIS.API_BASE}/${args.id}`;
 
-    const body = JSON.stringify({
-      name: args.name,
-      surname: args.surname,
-      phoneCode: args.phoneCode,
-      phoneNumber: args.phoneNumber,
-    });
+  const body = JSON.stringify({
+    name: args.name,
+    surname: args.surname,
+    phoneCode: args.phoneCode,
+    phoneNumber: args.phoneNumber,
+  });
 
-    const response = await fetch(url, {
-      method: 'PUT',
-      body,
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update users');
-    }
-    const data = await response.json();
-
-    return data;
-  } catch (error: any) {
-    const fetchError: ApiError = {
-      message: error?.message ?? 'Unknown error',
-      status: error?.status ?? '',
-    };
-    return fetchError;
-  }
+  return fetchApi(
+    url,
+    { method: 'PUT', body, headers: commonHeaders },
+    'json',
+    signal,
+  );
 };
 
 export const DELETEUSER = async (
   args: DELETEUSER_ARGS,
   signal?: AbortSignal,
 ): Promise<string | ApiError> => {
-  try {
-    const url = `${APIS.LOCAL}${APIS.API_BASE}/${args.userID}`;
-
-    const response = await fetch(url, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete users');
-    }
-    const data = await response.text();
-
-    return data;
-  } catch (error: any) {
-    const fetchError: ApiError = {
-      message: error?.message ?? 'Unknown error',
-      status: error?.status ?? '',
-    };
-    return fetchError;
-  }
+  const url = `${APIS.LOCAL}${APIS.API_BASE}/${args.userID}`;
+  return fetchApi(
+    url,
+    { method: 'DELETE', headers: commonHeaders, signal },
+    'string',
+    signal,
+  );
 };

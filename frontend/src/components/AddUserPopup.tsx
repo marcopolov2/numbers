@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   Button,
   Dialog,
@@ -21,28 +21,34 @@ interface AddUserProps {
   onClose: () => void;
 }
 
+const defaultUser = {
+  id: -1,
+  name: '',
+  surname: '',
+  phoneCode: '',
+  phoneNumber: '',
+};
+
 const AddUserPopup: React.FC<AddUserProps> = ({ open, onClose, onAdd }) => {
-  const [user, setUser] = useState<User>({
-    id: -1,
-    name: '',
-    surname: '',
-    phoneCode: '',
-    phoneNumber: '',
-  });
+  const [user, setUser] = useState<User>(defaultUser);
 
-  const setField = (field: string, value: string): void => {
-    if (field in user) {
-      setUser((prev: User) => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
-  };
+  useEffect(() => {
+    setUser(defaultUser);
+  }, [setUser, open]);
 
-  const handleAddUser = () => {
+  const setField = useCallback((field: string, value: string): void => {
+    setUser((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }, []);
+
+  const handleAddUser = useCallback(() => {
     onAdd(user);
     onClose();
-  };
+  }, [onAdd, onClose, user]);
+
+  const isFormValid = useMemo(() => isUserValid(user, true), [user]);
 
   return (
     <Dialog open={open} onClose={onClose} sx={{ margin: 'auto' }}>
@@ -61,7 +67,6 @@ const AddUserPopup: React.FC<AddUserProps> = ({ open, onClose, onAdd }) => {
           countryCode={user.phoneCode}
           onChange={(code) => setField('phoneCode', code)}
         />
-
         <Input
           label="Name"
           validate={isNameValid}
@@ -84,7 +89,7 @@ const AddUserPopup: React.FC<AddUserProps> = ({ open, onClose, onAdd }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button disabled={!isUserValid(user, true)} onClick={handleAddUser}>
+        <Button disabled={!isFormValid} onClick={handleAddUser}>
           Add
         </Button>
       </DialogActions>

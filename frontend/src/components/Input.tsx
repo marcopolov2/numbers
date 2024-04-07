@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useCallback } from 'react';
 import TextField from '@mui/material/TextField';
 
 interface InputProps {
@@ -24,15 +24,16 @@ const Input: React.FC<InputProps> = ({
 }) => {
   const [error, setError] = useState(false);
 
-  const handleChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const newValue = event.target.value;
-    const isValid = validate(newValue);
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const newValue = event.target.value;
+      const isValid = validate(newValue);
 
-    setError(!isValid);
-    onChange(newValue);
-  };
+      setError(!isValid);
+      onChange(newValue);
+    },
+    [validate, onChange],
+  );
 
   return (
     <TextField

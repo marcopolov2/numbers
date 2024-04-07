@@ -53,7 +53,15 @@ CURL Requests:
 ```
 
 ```bash
-curl -X GET "http://localhost:8080/employees/v2?search=Aragorn&field=name&direction=ASC&size=10&page=1" -H "Content-Type: application/json"
+GET (search, sort, paginate):
+Parameters:
+1. search (string)
+2. field (string) sorting column
+3. direction (ASC |  DESC) sorting
+4. page (number) paginate size
+5. size (number) paginate page size
+
+curl -X GET "http://localhost:8080/employees/v2?search={search}&field={field}&direction={direction}&size={size}&page={page}" -H "Content-Type: application/json"
 ```
 ```bash
 curl -X DELETE "http://localhost:8080/employees/23" -H "Content-Type: application/json"

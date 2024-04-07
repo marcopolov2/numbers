@@ -4,8 +4,8 @@
 
 ## Description
 
-This repository contains a straightforward RESTful API built with Java Spring Boot, incorporating HATEOAS principles. It is designed to be consumed by a React and Redux front-end.
-Navigate the world of phone numbers!
+This repository contains a straightforward RESTful API built with Java Spring Boot, incorporating HATEOAS principles, consumed by a React 18 frontend
+
 
 ## System Requirements
 

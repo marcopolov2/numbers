@@ -50,7 +50,7 @@ Once the fe is up and running, React will spin up a local server on http://local
 
 ## CURL Requests:
 
-# GET (search, sort, paginate):
+### GET (search, sort, paginate):
 Parameters:
 1. search (string)
 2. field (string) sorting column
@@ -62,7 +62,7 @@ Parameters:
 curl -X GET "http://localhost:8080/employees/v2?search={search}&field={field}&direction={direction}&size={size}&page={page}" -H "Content-Type: application/json"
 ```
 
-# DELETE
+### DELETE
 Parameters:
 1. userID (number)
 
@@ -70,7 +70,7 @@ Parameters:
 curl -X DELETE "http://localhost:8080/employees/{userID}" -H "Content-Type: application/json"
 ```
 
-# POST
+### POST
 Parameters:
 1. name (string)
 2. surname (string)
@@ -81,7 +81,7 @@ Parameters:
 curl -X POST "http://localhost:8080/employees" -H "Content-Type: application/json" -d "{\"name\": \"{name}\", \"surname\": \"{surname}\", \"phoneCode\": \"{phoneCode}\", \"phoneNumber\": \"{phoneNumber}\"}"
 ```
 
-# PUT
+### PUT
 Parameters:
 1. userID (number)
 2. name (string)

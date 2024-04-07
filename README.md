@@ -46,3 +46,21 @@ npm i
 npm start
 ```
 Once the fe is up and running, React will spin up a local server on http://localhost:3000/
+
+
+```bash
+CURL Requests:
+```
+
+```bash
+curl -X GET "http://localhost:8080/employees/v2?search=Aragorn&field=name&direction=ASC&size=10&page=1" -H "Content-Type: application/json"
+```
+```bash
+curl -X DELETE "http://localhost:8080/employees/23" -H "Content-Type: application/json"
+```
+```bash
+curl -X POST "http://localhost:8080/employees" -H "Content-Type: application/json" -d "{\"name\": \"John\", \"surname\": \"Baggins\", \"phoneCode\": \"27\", \"phoneNumber\": \"737383738\"}"
+```
+```bash
+curl -X PUT "http://localhost:8080/employees/1" -H "Content-Type: application/json" -d "{\"name\": \"Bilbo-v2\", \"surname\": \"Baggins\", \"phoneCode\": \"27\", \"phoneNumber\": \"737383738\"}"
+```

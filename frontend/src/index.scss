@@ -1,40 +1,55 @@
+// Setup
+@import url('./styles/design-tokens/index.scss');
+
+// Helpers
+@import url('./styles/utility/index.scss');
+
+// Overrides
+@import url('./styles/material-overrides/index.scss');
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-html {
+html,
+body {
   margin: 0;
   padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
   font-family: 'Graphik', sans-serif;
   scroll-behavior: smooth;
-  background-color: white;
+  background-image: url(../../frontend/src/assets/images/background.jpg);
+}
+
+::-webkit-scrollbar {
+  border-radius: 0.5rem;
+  width: 0.75rem;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 0.5rem;
+  background-color: var(--frosty-white-600);
+  border: 2px solid transparent;
+  border-radius: 0.5625rem;
+  background-clip: content-box;
 }
 
 .page__home {
   width: 100vw;
   height: 100vh;
-  display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
   overflow: hidden;
 
-  .container__logo {
-    display: flex;
+  .page__home-logo {
     align-items: center;
     gap: 3rem;
-    color: #1976d2;
-    font-size: 3rem;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-    font-weight: 500;
 
     /* globe */
     .earth {
@@ -43,8 +58,8 @@ body {
       overflow: hidden;
       border-radius: 50%;
       box-shadow:
-        0 0 10px 10px #00000075 inset,
-        0 0 10px 2px #0000009f;
+        0 0 10px 10px var(--midnight-blue-500) inset,
+        0 0 10px 2px var(--midnight-blue-400);
     }
 
     .earth > div {
@@ -58,12 +73,11 @@ body {
     /* text */
     span {
       position: relative;
-      font-weight: 900;
-      font-size: 3rem;
-      color: #1976d2;
+      font-size: var(--logo-size);
+      letter-spacing: var(--logo-spacing);
+      font-weight: var(--logo-weight);
+      color: var(--logo-color);
       font-style: italic;
-      letter-spacing: 0.05em;
-      display: inline-block;
     }
 
     span:before {
@@ -79,53 +93,51 @@ body {
     }
   }
 
-  .container__search {
-    display: flex;
+  .page__home-search {
     align-items: center;
     justify-content: space-between;
 
-    h1 {
-      color: #1976d2;
-      padding: 1rem;
-      margin: 0;
-    }
-
     Input,
     Button {
-      width: 300px;
+      width: 18.75rem;
     }
   }
 
-  .container__table {
+  .page__home-table {
     flex: 1 0 0;
     overflow: auto;
   }
 }
 
-.component__table {
-  .component__table-header {
-    display: flex;
+.component__usertable {
+  .component__usertable-header {
     gap: 1rem;
+    margin: 0 0 0 0.5rem;
   }
 
-  .sort-icon {
+  .icon-sort {
     width: 10px;
     height: 15px;
-    color: #ad562e21;
   }
 
-  .sort-icon.asc {
+  .icon-delete {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .icon-sort.asc {
     transform: rotate(180deg);
   }
 
-  .sort-icon.desc {
+  .icon-sort.desc {
     transform: rotate(0);
   }
-}
 
-/* MUI overrides */
-Button {
-  height: 35px;
+  .action-buttons {
+    align-items: center;
+    gap: 1rem;
+  }
 }
 
 @keyframes spin {

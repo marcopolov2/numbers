@@ -1,23 +1,25 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getUsers,
-  addUser,
-  setUser,
-  deleteUser,
-  updateUser,
-} from '../store/usersSlice';
 import Input from '../components/Input';
 import {
   selectAllOriginalUsers,
   selectAllUsers,
   selectCacheState,
 } from '../store/userSelectors';
-import { StickyHeaderTable } from '../components/StickyHeaderTable';
+import { UserTable } from '../components/UserTable';
 import { User } from '../shared/models/models';
 import { RootState } from '../store/store';
 import { Button, TablePagination } from '@mui/material';
 import AddUserPopup from '../components/AddUserPopup';
+import {
+  addUser,
+  deleteUser,
+  getUsers,
+  updateUser,
+} from '../store/asyncThunks';
+import { setUser } from '../store/usersSlice';
+
+const PAGE_SIZES = [5, 10, 25, 100];
 
 const intialFilters = {
   search: '',
@@ -26,8 +28,6 @@ const intialFilters = {
   sortField: 'phoneCode',
   sortDirection: 'ASC',
 };
-
-const PAGE_SIZES = [5, 10, 25, 100];
 
 const Home: React.FC = () => {
   // local:
@@ -39,6 +39,7 @@ const Home: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<string>(
     intialFilters.sortDirection,
   );
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   // redux:
   const dispatch = useDispatch();
@@ -46,6 +47,12 @@ const Home: React.FC = () => {
   const cache = useSelector(selectCacheState);
   const originalUsers: User[] = useSelector(selectAllOriginalUsers);
   const totalUsers = useSelector((state: RootState) => state.users.totalUsers);
+
+  useEffect(() => {
+    if (tableContainerRef.current) {
+      tableContainerRef.current.scrollTop = 0;
+    }
+  }, [users]);
 
   const handleFetchUsers = useCallback(() => {
     const debounceTimeout = setTimeout(() => {
@@ -62,6 +69,14 @@ const Home: React.FC = () => {
 
     return () => clearTimeout(debounceTimeout);
   }, [dispatch, search, sortField, sortDirection, pageSize, page]);
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const size = +event.target.value;
+    setPage(0);
+    setPageSize(size);
+  };
 
   useEffect(() => {
     const cacheReset = Object.keys(cache).length === 0;
@@ -83,50 +98,41 @@ const Home: React.FC = () => {
     page,
   ]);
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const size = +event.target.value;
-    setPage(0);
-    setPageSize(size);
-  };
-
   return (
-    <section className="page__home">
+    <section className="u-row page__home">
       <AddUserPopup
         open={openModal}
         onClose={() => setOpenModal(false)}
         onAdd={(user) => dispatch(addUser(user) as any)}
       />
-
-      <section className="container__logo">
+      <section className="u-row u-text-shadow page__home-logo">
         <div className="earth">
           <div></div>
         </div>
 
         <svg xmlns="http://www.w3.org/2000/svg">
           <filter id="motion-blur-filter" filterUnits="userSpaceOnUse">
-            <feGaussianBlur stdDeviation="100 0"></feGaussianBlur>
+            <feGaussianBlur stdDeviation="50 0"></feGaussianBlur>
           </filter>
         </svg>
         <span filter-content="S">Express Phonebook</span>
       </section>
-
-      <section className="container__search">
-        <h1>Search:</h1>
-        <Input
-          value={search}
-          label="Search any field"
-          onChange={(search) => setSearch(search)}
-        />
+      <section className="u-row page__home-search">
+        <section className="u-row u-row--center">
+          <h1>Search:</h1>
+          <Input
+            value={search}
+            label="Search any field"
+            onChange={(search) => setSearch(search)}
+          />
+        </section>
 
         <Button variant="contained" onClick={() => setOpenModal(true)}>
-          + Add
+          + Add User
         </Button>
       </section>
-
-      <section className="container__table">
-        <StickyHeaderTable
+      <section className="page__home-table" ref={tableContainerRef}>
+        <UserTable
           users={users}
           originalUsers={originalUsers}
           sortField={sortField}
@@ -142,7 +148,6 @@ const Home: React.FC = () => {
           }
         />
       </section>
-
       <TablePagination
         rowsPerPageOptions={PAGE_SIZES}
         component="div"

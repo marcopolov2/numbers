@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { countries } from '../constants/Constants';
 
-// Define a type for the size prop
 type Size = 'small' | 'medium';
 
 interface CountrySelectProps {
@@ -20,10 +19,9 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
   countryCode = '',
   onChange = (phoneCode: string) => {},
 }) => {
-  const sortedCountries = countries.sort((a, b) =>
-    a.label.localeCompare(b.label),
-  );
-
+  const sortedCountries = useMemo(() => {
+    return countries.slice().sort((a, b) => a.label.localeCompare(b.label));
+  }, []);
   return (
     <Autocomplete
       disabled={disabled}

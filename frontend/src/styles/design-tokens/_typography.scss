@@ -1,0 +1,15 @@
+:root {
+  --logo-color: var(--azure-600);
+  --logo-size: 2.5rem;
+  --logo-weight: 600;
+  --logo-spacing: 0.125rem;
+
+  --h1: 1.5rem;
+}
+
+h1 {
+  color: var(--azure-600);
+  padding: 1rem;
+  margin: 0;
+  font-size: var(--h1);
+}
